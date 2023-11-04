@@ -1,0 +1,9 @@
+hello_str ="hello how are you \"\
+"
+s = "Today. sky is clear.  \
+Today: Mostly sunny"
+toto = "Here; is. the test, that you:\"\
+"
+
+
+print(hello_str)

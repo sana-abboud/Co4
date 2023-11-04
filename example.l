@@ -60,7 +60,7 @@ int indentLevel = 0;
 
 [ \t\r]+                { /* Ignore whitespace and newlines */ }
 
-[\(\)\[\]\{\}\.,;:]     { printf("SPECIAL_CHARACTER: %s\n", yytext); }
+[\(\)\[\]\{\}\.\,\;\:]     { printf("SPECIAL_CHARACTER: %s\n", yytext); }
 
 \n                      {  
     int spaces = 0;
