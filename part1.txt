@@ -1,0 +1,9 @@
+def print_numbers(n):
+    for i in range(n):
+        print(i)
+
+if __name__ == "__main__":
+    print("Enter a number:")
+    num = int(input())
+    print("Printing numbers:")
+    print_numbers(num)
