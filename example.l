@@ -1,14 +1,18 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+int indent_level = 0;
 %}
 
 %option noyywrap
 
+%x INDENT DEDENT
+
 /* Define token types as constants */
 %{
-#define INDENT 12
-#define DEDENT 13
+
+
 #define IDENTIFIER 1
 #define KEYWORD 2
 #define LITERAL 3
@@ -18,7 +22,6 @@
 #define BINARY_NUMBER 7
 #define STRING_LITERAL 8
 #define COMMENT 9
-#define SPECIAL_CHARACTER 10
 #define STRING 11
 %}
 
@@ -32,16 +35,18 @@ LITERALSTRING   \"([^\"\\]|\\.)*\"
 LITERALCHAR     \'([^\']|\\.)\'
 
 
-KEYWORD     if|else|while|for|def|class|as|assert|break|continue|del|except|finally|from|global|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|with|yield
-OPERATORS   [+\-*/%<>&^|=!]=?
+KEYWORD              if|else|while|for|def|class|as|assert|break|continue|del|except|finally|from|global|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|with|yield|True|print
+OPERATORS            [+\-*/%<>&^|=!]=?
 
-DECIMAL_NUMBER  {DIGIT}+\.{DIGIT}+
-INTEGER_NUMBER  {DIGIT}+
-BINARY_NUMBER   0b[01]+
+DECIMAL_NUMBER       {DIGIT}+\.{DIGIT}+
+INTEGER_NUMBER       {DIGIT}+
+BINARY_NUMBER        0b[01]+
 
-STRING_LITERAL  \"([^\"\\]|\\.)*\"
-COMMENT_LINE   \#.+
-COMMENT_BLOCK  \/\*[^*]*\*+([^/*][^*]*\*+)*\/
+STRING_LITERAL       \"([^\"\\]|\\.)*\"
+COMMENT_LINE         \#.+
+COMMENT_BLOCK        \/\*[^*]*\*+([^/*][^*]*\*+)*\/
+
+SPECIAL_CHARACTER      [()[\]{}.;:]
 
 int indentLevel = 0;  
 
@@ -56,34 +61,26 @@ int indentLevel = 0;
 {COMMENT_LINE}          { printf("Comment: %s\n", yytext); }  // Print comment line
 {COMMENT_BLOCK}         { printf("Comment: %s\n", yytext); }  // Print comment block
 {IDENTIFIER}            { printf("IDENTIFIER = %s\n", yytext); }
-\"([^\"\\]*(\\\\.[^\"\\]*)*)\"  { printf("STRING: %s\n", yytext); }  // Print string
+{SPECIAL_CHARACTER}     { printf("SPECIAL_CHARACTER: %s\n", yytext); }
 
 [ \t\r]+                { /* Ignore whitespace and newlines */ }
 
-[\(\)\[\]\{\}\.\,\;\:]     { printf("SPECIAL_CHARACTER: %s\n", yytext); }
-
-\n                      {  
-    int spaces = 0;
-    int i = 0;
-    while (yytext[i] == ' ') {
-        spaces++;
-        i++;
-    }
-    
-    if (spaces > indentLevel) {
-        for (i = 0; i < (spaces - indentLevel); i++) {
-            printf("INDENT\n");
-        }
-        indentLevel = spaces;
-    } else if (spaces < indentLevel) {
-        for (i = 0; i < (indentLevel - spaces); i++) {
-            printf("DEDENT\n");
-        }
-        indentLevel = spaces;
-    }
-}
-
-.                       { printf("Invalid Character: %c\n", yytext[0]); }
+\n            {
+               int c;
+               while ((c = getchar()) == ' ' || c == '\t') {}
+               ungetc(c, stdin);
+               if (indent_level > 0) {
+                   printf("DEDENT\n");
+                   indent_level--;
+               }
+               while ((c = getchar()) == ' ' || c == '\t') {}
+               ungetc(c, stdin);
+               if (c != EOF) {
+                   printf("INDENT\n");
+                   indent_level++;
+               }
+            }
+.                       { printf("Invalid_Character: %c\n", yytext[0]); }
 %%
 
 int main(int argc, char **argv) {
