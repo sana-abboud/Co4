@@ -35,7 +35,7 @@ LITERALSTRING   \"([^\"\\]|\\.)*\"
 LITERALCHAR     \'([^\']|\\.)\'
 
 
-KEYWORD              if|else|while|for|def|class|as|assert|break|continue|del|except|finally|from|global|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|with|yield|True|print
+KEYWORD              if|else|elif|while|for|def|class|as|assert|break|continue|del|except|finally|from|global|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|with|yield|True|print|and|False|None|match|case|async|await|self
 OPERATORS            [+\-*/%<>&^|=!]=?
 
 DECIMAL_NUMBER       {DIGIT}+\.{DIGIT}+
